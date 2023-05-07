@@ -1,5 +1,5 @@
-#2024-05-07 22:00
-name: 0 - release - no code sign
+#2024-05-07 22:10
+name: 0 - release - code sign win
 
 on:
   workflow_dispatch:
@@ -167,6 +167,7 @@ jobs:
       # TODO: add windows32 build step
 
       - name: Sign executable files
+        if: ${{ matrix.platform == 'win' }}
         continue-on-error: true
         uses: deep-soft/code-sign-action@master
         with:
