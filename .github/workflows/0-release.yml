@@ -10,6 +10,7 @@ on:
 
 env:
   TAG_NAME: deskreen
+  DEBUG_LS: "yes"
 
 jobs:
 #   create-release:
@@ -47,6 +48,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Create source archive
+        continue-on-error: true
+        shell: bash
+        run: |
+          staging="deskreen-src-${{ env.VERSION }}-${{ matrix.job.target }}-${{ matrix.job.extra-build-features }}-${{ env.GUI }}"
+          touch "$staging.tar.xz"
+          #tar -cfJ "$staging.tar.xz" --exclude "$staging.tar.xz" .
+          #tar --exclude=*.tar* --exclude=target/*  --exclude=vcpkg/* -cv . | xz -9 > "$staging.tar.xz"
+          tar --exclude=*.tar* -cv . | xz -9 > "$staging.tar.xz"
+          echo "ASSET_SRC=$staging.tar.xz" >> $GITHUB_ENV
+          if [ "${{ env.DEBUG_LS }}" = "yes" ]; then
+            echo "source archive name: "
+            ls -l "$staging.tar.xz"
+          fi
+
       - name: Setup Node.js environment
         uses: actions/setup-node@v3
         with:
@@ -76,6 +92,21 @@ jobs:
         run: |
           cd ./app
           yarn install --frozen-lockfile
+
+      - name: Create source archive 1
+        continue-on-error: true
+        shell: bash
+        run: |
+          staging="deskreen-src1-${{ env.VERSION }}-${{ matrix.job.target }}-${{ matrix.job.extra-build-features }}-${{ env.GUI }}"
+          touch "$staging.tar.xz"
+          #tar -cfJ "$staging.tar.xz" --exclude "$staging.tar.xz" .
+          #tar --exclude=*.tar* --exclude=target/*  --exclude=vcpkg/* -cv . | xz -9 > "$staging.tar.xz"
+          tar --exclude=*.tar* -cv . | xz -9 > "$staging.tar.xz"
+          echo "ASSET_SRC1=$staging.tar.xz" >> $GITHUB_ENV
+          if [ "${{ env.DEBUG_LS }}" = "yes" ]; then
+            echo "source archive name: "
+            ls -l "$staging.tar.xz"
+          fi
 
       - name: yarn build
         env:
@@ -115,13 +146,45 @@ jobs:
         run: yarn package-ci
       # TODO: add windows32 build step
 
-      - name: Upload binaries to release
-        uses: actions/create-release@v1
-#        uses: xresloader/upload-to-github-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Sign executable files
+        uses: deep-soft/code-sign-action@master
         with:
-          tag_name: ${{ env.TAG_NAME }}-${{ matrix.platform }}
-          file: ${{ matrix.artifact_name }}
-          # tags: true
+          certificate: '${{ secrets.WINDOWS_PFX_BASE64 }}'
+          password: '${{ secrets.WINDOWS_PFX_PASSWORD }}'
+          certificatesha1: '${{ secrets.WINDOWS_PFX_SHA1_THUMBPRINT }}'
+          # certificatename: '${{ secrets.WINDOWS_PFX_NAME }}'
+          folder: './release'
+          recursive: false
+
+      - name: Create source archive 2
+        continue-on-error: true
+        shell: bash
+        run: |
+          staging="deskreen-src2-${{ env.VERSION }}-${{ matrix.job.target }}-${{ matrix.job.extra-build-features }}-${{ env.GUI }}"
+          touch "$staging.tar.xz"
+          #tar -cfJ "$staging.tar.xz" --exclude "$staging.tar.xz" .
+          #tar --exclude=*.tar* --exclude=target/*  --exclude=vcpkg/* -cv . | xz -9 > "$staging.tar.xz"
+          tar --exclude=*.tar* -cv . | xz -9 > "$staging.tar.xz"
+          echo "ASSET_SRC2=$staging.tar.xz" >> $GITHUB_ENV
+          if [ "${{ env.DEBUG_LS }}" = "yes" ]; then
+            echo "source archive name: "
+            ls -l "$staging.tar.xz"
+          fi
+
+      - name: Publish Release
+        uses: deep-soft/action-gh-release@v1
+        with:
           draft: true
+          tag_name: ${{ env.TAG_NAME }}-${{ matrix.platform }}
+          files: |
+            ${{ matrix.artifact_name }}
+
+      - name: Publish Release artifacts
+        uses: deep-soft/action-gh-release@v1
+        with:
+          draft: true
+          tag_name: ${{ env.TAG_NAME }}-${{ matrix.platform }}-src
+          files: |
+            ${{ env.ASSET_SRC }}
+            ${{ env.ASSET_SRC1 }}
+            ${{ env.ASSET_SRC2 }}
