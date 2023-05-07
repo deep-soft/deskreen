@@ -1,7 +1,8 @@
 # https://docs.github.com/en/actions/reference/events-that-trigger-workflows#release
 on:
-  release:
-    types: [released]
+  workflow_dispatch:
+#  release:
+#    types: [released]
 
 name: Update Homebrew cask
 
