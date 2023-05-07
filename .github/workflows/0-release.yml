@@ -1,4 +1,4 @@
-#2024-05-07 21:00
+#2024-05-07 22:00
 name: 0 - release - no code sign
 
 on:
@@ -39,10 +39,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { platform: win, os: windows-2022, artifact_name: 'release/{*.msi,*.exe,*.blockmap,*.yml}' }
+          - { platform: win, os: windows-2022, artifact_name: 'release/*.msi,release/*.exe,release/*.blockmap,release/*.yml' }
           # IMPORTANT!!! this LINUX os should be the same as in build-and-test and covecov workflows! this is for making sure caches are used in most efficient way
-          - { platform: lin, os: ubuntu-22.04, artifact_name: 'release/{*.AppImage,*.rpm,*.deb,*.yml}' }
-          - { platform: mac, os: macos-latest, artifact_name: 'release/{*.dmg,*.blockmap,*.yml}'       }
+          - { platform: lin, os: ubuntu-22.04, artifact_name: 'release/*.AppImage,release/*.rpm,release/*.deb,release/*.yml' }
+          - { platform: mac, os: macos-latest, artifact_name: 'release/*.dmg,release/*.blockmap,release/*.yml'               }
 
     steps:
       - name: Checkout code
@@ -160,12 +160,14 @@ jobs:
       #     run: yarn test-ux
 
       - name: yarn package-ci
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: yarn package-ci
       # TODO: add windows32 build step
 
       - name: Sign executable files
+        continue-on-error: true
         uses: deep-soft/code-sign-action@master
         with:
           certificate: '${{ secrets.WINDOWS_PFX_BASE64 }}'
@@ -191,6 +193,7 @@ jobs:
           fi
 
       - name: Publish Release
+        continue-on-error: true
         uses: deep-soft/action-gh-release@v1
         with:
           draft: true
@@ -199,6 +202,7 @@ jobs:
             ${{ matrix.artifact_name }}
 
       - name: Publish Release artifacts
+        continue-on-error: true
         uses: deep-soft/action-gh-release@v1
         with:
           draft: true
