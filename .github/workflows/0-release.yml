@@ -9,7 +9,7 @@ on:
 #      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
 env:
-  tag_name: deskreen
+  TAG_NAME: deskreen
 
 jobs:
 #   create-release:
@@ -31,19 +31,17 @@ jobs:
 #           # prerelease: false
 
   release:
-    name: Deskreen Release
+#    name: Deskreen Release
+    name: ${{ env.TAG_NAME }}
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
         include:
-          - { name: win,
-            platform: win, os: windows-2022, artifact_name: 'release/{*.msi,*.exe,*.blockmap,*.yml}' }
+          - { platform: win, os: windows-2022, artifact_name: 'release/{*.msi,*.exe,*.blockmap,*.yml}' }
           # IMPORTANT!!! this LINUX os should be the same as in build-and-test and covecov workflows! this is for making sure caches are used in most efficient way
-          - { name: lin,
-            platform: lin, os: ubuntu-22.04, artifact_name: 'release/{*.AppImage,*.rpm,*.deb,*.yml}' }
-          - { name: mac,
-            platform: mac, os: macos-latest, artifact_name: 'release/{*.dmg,*.blockmap,*.yml}'       }
+          - { platform: lin, os: ubuntu-22.04, artifact_name: 'release/{*.AppImage,*.rpm,*.deb,*.yml}' }
+          - { platform: mac, os: macos-latest, artifact_name: 'release/{*.dmg,*.blockmap,*.yml}'       }
 
     steps:
       - name: Checkout code
