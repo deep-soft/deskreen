@@ -1,14 +1,37 @@
-#2024-05-07 22:10
+#2024-05-07 22:20
 name: 0 - release - code sign win
 
 on:
   workflow_dispatch:
+    inputs:
+      manual:
+        description: Manual run (bypass default conditions)
+        type: boolean
+        required: true
+        default: true
+      archive_tarxz:
+        description: Create archive_tarxz
+        type: boolean
+        required: true
+        default: false
+      archive_tarxz1:
+        description: Create archive_tarxz1
+        type: boolean
+        required: true
+        default: false
+      archive_tarxz2:
+        description: Create archive_tarxz2
+        type: boolean
+        required: true
+        default: false
+
 #  push:
 #    # Sequence of patterns matched against refs/tags
 #    tags:
 #      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
 env:
+  PRG_NAME: deskreen
   TAG_NAME: deskreen
   DEBUG_LS: "yes"
 
@@ -68,10 +91,11 @@ jobs:
           echo ${{ env.VERSION }}
 
       - name: Create source archive
+        if: ${{ github.event.inputs.archive_tarxz }}
         continue-on-error: true
         shell: bash
         run: |
-          staging="deskreen-src-${{ env.VERSION }}-${{ matrix.platform }}-${{ matrix.os}}"
+          staging="$PRG_NAME-src-${{ env.VERSION }}-${{ matrix.platform }}-${{ matrix.os}}"
           touch "$staging.tar.xz"
           #tar -cfJ "$staging.tar.xz" --exclude "$staging.tar.xz" .
           #tar --exclude=*.tar* --exclude=target/*  --exclude=vcpkg/* -cv . | xz -9 > "$staging.tar.xz"
@@ -113,10 +137,11 @@ jobs:
           yarn install --frozen-lockfile
 
       - name: Create source archive 1
+        if: ${{ github.event.inputs.archive_tarxz1 }}
         continue-on-error: true
         shell: bash
         run: |
-          staging="deskreen-src1-${{ env.VERSION }}-${{ matrix.platform }}-${{ matrix.os}}"
+          staging="$PRG_NAME-src1-${{ env.VERSION }}-${{ matrix.platform }}-${{ matrix.os}}"
           touch "$staging.tar.xz"
           #tar -cfJ "$staging.tar.xz" --exclude "$staging.tar.xz" .
           #tar --exclude=*.tar* --exclude=target/*  --exclude=vcpkg/* -cv . | xz -9 > "$staging.tar.xz"
@@ -179,10 +204,11 @@ jobs:
           recursive: false
 
       - name: Create source archive 2
+        if: ${{ github.event.inputs.archive_tarxz2 }}
         continue-on-error: true
         shell: bash
         run: |
-          staging="deskreen-src2-${{ env.VERSION }}-${{ matrix.platform }}-${{ matrix.os}}"
+          staging="$PRG_NAME-src2-${{ env.VERSION }}-${{ matrix.platform }}-${{ matrix.os}}"
           touch "$staging.tar.xz"
           #tar -cfJ "$staging.tar.xz" --exclude "$staging.tar.xz" .
           #tar --exclude=*.tar* --exclude=target/*  --exclude=vcpkg/* -cv . | xz -9 > "$staging.tar.xz"
