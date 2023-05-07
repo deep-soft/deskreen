@@ -1,4 +1,4 @@
-#2024-05-07 20:30
+#2024-05-07 21:00
 name: 0 - release - no code sign
 
 on:
@@ -34,6 +34,7 @@ jobs:
   release:
 #    name: Deskreen Release
     runs-on: ${{ matrix.os }}
+
     strategy:
       fail-fast: false
       matrix:
@@ -51,8 +52,10 @@ jobs:
       - name: Get version
         run: |
           content=$(cat ./package.json)
-          export VERSION=$(fromJson($content).version)
+          export VERSION=${{ fromJson($content).version }}
+#          export VERSION=$(fromJson($content).version)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo $VERSION
           # the following lines are only required for multi line json
 #          content="${content//'%'/'%25'}"
 #          content="${content//$'\n'/'%0A'}"
@@ -63,6 +66,10 @@ jobs:
 #          echo "VERSION=fromJson(steps.set_var.outputs.packageJson).version
 #      - run: |
 #          echo "${{ fromJson(steps.set_var.outputs.packageJson).version }}"
+
+      - name: Print version
+        run: |
+          echo ${{ env.VERSION }}
 
       - name: Create source archive
         continue-on-error: true
