@@ -49,18 +49,21 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Get package.json
+        shell: bash
         run: |
           echo 'PACKAGE_JSON<<EOF' >> $GITHUB_ENV
           cat ./package.json >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
 
       - name: Get version
+        shell: bash
         run: |
           export VERSION=${{ fromJson(env.PACKAGE_JSON).version }}
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo $VERSION
 
       - name: Print version
+        shell: bash
         run: |
           echo ${{ env.VERSION }}
 
