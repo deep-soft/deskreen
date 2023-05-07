@@ -31,16 +31,19 @@ jobs:
 #           # prerelease: false
 
   release:
-#    name: Deskreen Release
+    name: Deskreen Release
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
         include:
-          - { platform: win, os: windows-2022, artifact_name: 'release/{*.msi,*.exe,*.blockmap,*.yml}' }
+          - { name: win,
+            platform: win, os: windows-2022, artifact_name: 'release/{*.msi,*.exe,*.blockmap,*.yml}' }
           # IMPORTANT!!! this LINUX os should be the same as in build-and-test and covecov workflows! this is for making sure caches are used in most efficient way
-          - { platform: lin, os: ubuntu-22.04, artifact_name: 'release/{*.AppImage,*.rpm,*.deb,*.yml}' }
-          - { platform: mac, os: macos-latest, artifact_name: 'release/{*.dmg,*.blockmap,*.yml}'       }
+          - { name: lin,
+            platform: lin, os: ubuntu-22.04, artifact_name: 'release/{*.AppImage,*.rpm,*.deb,*.yml}' }
+          - { name: mac,
+            platform: mac, os: macos-latest, artifact_name: 'release/{*.dmg,*.blockmap,*.yml}'       }
 
     steps:
       - name: Checkout code
