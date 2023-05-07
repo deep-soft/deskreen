@@ -1,4 +1,4 @@
-#2024-05-07 20:00
+#2024-05-07 20:30
 name: 0 - release - no code sign
 
 on:
@@ -49,11 +49,28 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+#      - id: set_var
+        name: Get version
+        run: |
+          content=$(cat ./package.json)
+          export VERSION=$(fromJson($content).version)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          # the following lines are only required for multi line json
+#          content="${content//'%'/'%25'}"
+#          content="${content//$'\n'/'%0A'}"
+#          content="${content//$'\r'/'%0D'}"
+          # end of optional handling for multi line json
+          #echo "packageJson=$content" >> $GITHUB_ENV
+#          export VERSION=$(fromJson($content).version)
+#          echo "VERSION=fromJson(steps.set_var.outputs.packageJson).version
+#      - run: |
+#          echo "${{ fromJson(steps.set_var.outputs.packageJson).version }}"
+
       - name: Create source archive
         continue-on-error: true
         shell: bash
         run: |
-          staging="deskreen-src-${{ env.VERSION }}-${{ matrix.job.target }}-${{ matrix.job.extra-build-features }}-${{ env.GUI }}"
+          staging="deskreen-src-${{ env.VERSION }}-${{ matrix.platform }}-${{ matrix.os}}"
           touch "$staging.tar.xz"
           #tar -cfJ "$staging.tar.xz" --exclude "$staging.tar.xz" .
           #tar --exclude=*.tar* --exclude=target/*  --exclude=vcpkg/* -cv . | xz -9 > "$staging.tar.xz"
@@ -98,7 +115,7 @@ jobs:
         continue-on-error: true
         shell: bash
         run: |
-          staging="deskreen-src1-${{ env.VERSION }}-${{ matrix.job.target }}-${{ matrix.job.extra-build-features }}-${{ env.GUI }}"
+          staging="deskreen-src1-${{ env.VERSION }}-${{ matrix.platform }}-${{ matrix.os}}"
           touch "$staging.tar.xz"
           #tar -cfJ "$staging.tar.xz" --exclude "$staging.tar.xz" .
           #tar --exclude=*.tar* --exclude=target/*  --exclude=vcpkg/* -cv . | xz -9 > "$staging.tar.xz"
@@ -161,7 +178,7 @@ jobs:
         continue-on-error: true
         shell: bash
         run: |
-          staging="deskreen-src2-${{ env.VERSION }}-${{ matrix.job.target }}-${{ matrix.job.extra-build-features }}-${{ env.GUI }}"
+          staging="deskreen-src2-${{ env.VERSION }}-${{ matrix.platform }}-${{ matrix.os}}"
           touch "$staging.tar.xz"
           #tar -cfJ "$staging.tar.xz" --exclude "$staging.tar.xz" .
           #tar --exclude=*.tar* --exclude=target/*  --exclude=vcpkg/* -cv . | xz -9 > "$staging.tar.xz"
