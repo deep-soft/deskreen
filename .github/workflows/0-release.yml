@@ -1,4 +1,4 @@
-#2024-05-07 22:20
+#2024-05-07 23:30
 name: 0 - release - code sign win
 
 on:
@@ -91,7 +91,7 @@ jobs:
           echo ${{ env.VERSION }}
 
       - name: Create source archive
-        if: ${{ github.event.inputs.archive_tarxz }}
+        if: ${{ github.event.inputs.archive_tarxz == 'true' }}
         continue-on-error: true
         shell: bash
         run: |
@@ -137,7 +137,7 @@ jobs:
           yarn install --frozen-lockfile
 
       - name: Create source archive 1
-        if: ${{ github.event.inputs.archive_tarxz1 }}
+        if: ${{ github.event.inputs.archive_tarxz1 == 'true' }}
         continue-on-error: true
         shell: bash
         run: |
@@ -204,7 +204,7 @@ jobs:
           recursive: false
 
       - name: Create source archive 2
-        if: ${{ github.event.inputs.archive_tarxz2 }}
+        if: ${{ github.event.inputs.archive_tarxz2 == 'true' }}
         continue-on-error: true
         shell: bash
         run: |
@@ -229,7 +229,7 @@ jobs:
             ${{ matrix.artifact_name }}
 
       - name: Publish Release artifacts
-        if: ${{ github.event.inputs.archive_tarxz }} || ${{ github.event.inputs.archive_tarxz1 }} || ${{ github.event.inputs.archive_tarxz2 }}
+        if: ${{ (github.event.inputs.archive_tarxz == 'true') || (github.event.inputs.archive_tarxz1 == 'true') || (github.event.inputs.archive_tarxz2 == 'true') }}
         continue-on-error: true
         uses: deep-soft/action-gh-release@v1
         with:
