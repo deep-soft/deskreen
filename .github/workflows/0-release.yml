@@ -229,6 +229,7 @@ jobs:
             ${{ matrix.artifact_name }}
 
       - name: Publish Release artifacts
+        if: ${{ github.event.inputs.archive_tarxz }} || ${{ github.event.inputs.archive_tarxz1 }} || ${{ github.event.inputs.archive_tarxz2 }}
         continue-on-error: true
         uses: deep-soft/action-gh-release@v1
         with:
