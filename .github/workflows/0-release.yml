@@ -62,10 +62,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { platform: win, os: windows-2022, artifact_name: 'release/*.msi,release/*.exe,release/*.blockmap,release/*.yml' }
+          - { platform: win, os: windows-2022, artifact_name: 'release/*.msi,release/*.exe,release/*.yml' }
           # IMPORTANT!!! this LINUX os should be the same as in build-and-test and covecov workflows! this is for making sure caches are used in most efficient way
           - { platform: lin, os: ubuntu-22.04, artifact_name: 'release/*.AppImage,release/*.rpm,release/*.deb,release/*.yml' }
-          - { platform: mac, os: macos-latest, artifact_name: 'release/*.dmg,release/*.blockmap,release/*.yml'               }
+          - { platform: mac, os: macos-latest, artifact_name: 'release/*.dmg,release/*.yml'               }
 
     steps:
       - name: Checkout code
